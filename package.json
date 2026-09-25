@@ -1,0 +1,25 @@
+{
+  "name": "paises",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://valentinoel12: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@github.com/valentinoel12/paises.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/valentinoel12/paises/issues"
+  },
+  "homepage": "https://github.com/valentinoel12/paises#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mysql2": "^3.24.4"
+  }
+}
