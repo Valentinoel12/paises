@@ -5,12 +5,12 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(express.static('.'));
 
-// Conexión a la base de datos MySQL local
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
+    host: '127.0.0.1',
+    user: 'admin',
+    password: 'admin123',
     database: 'paises_7A'
 });
 
@@ -19,10 +19,10 @@ db.connect(err => {
         console.error('Error al conectar con la base de datos:', err);
         return;
     }
-    console.log('Conectado a la base de datos paises_7A');
+    console.log('Conexión exitosa a la base de datos paises_7A');
 });
 
-// 1. READ: Obtener todos los países
+// READ (Listar todos)
 app.get('/paises', (req, res) => {
     db.query('SELECT * FROM paises', (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -30,7 +30,7 @@ app.get('/paises', (req, res) => {
     });
 });
 
-// 2. CREATE: Agregar un nuevo país
+// CREATE (Crear un país)
 app.post('/paises', (req, res) => {
     const { pais_descripcion } = req.body;
     db.query('INSERT INTO paises (pais_descripcion) VALUES (?)', [pais_descripcion], (err, results) => {
@@ -39,7 +39,7 @@ app.post('/paises', (req, res) => {
     });
 });
 
-// 3. UPDATE: Actualizar un país por ID
+// UPDATE (Modificar país)
 app.put('/paises/:id', (req, res) => {
     const { id } = req.params;
     const { pais_descripcion } = req.body;
@@ -49,7 +49,7 @@ app.put('/paises/:id', (req, res) => {
     });
 });
 
-// 4. DELETE: Eliminar un país por ID
+// DELETE (Eliminar país)
 app.delete('/paises/:id', (req, res) => {
     const { id } = req.params;
     db.query('DELETE FROM paises WHERE pais_id = ?', [id], (err, results) => {

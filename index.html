@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Países</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 750px; margin: 40px auto; padding: 0 20px; background: #f8fafc; color: #1e293b; }
+    h1 { text-align: center; }
+    .form-box { display: flex; gap: 10px; margin-bottom: 24px; }
+    input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; }
+    button { padding: 10px 18px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: bold; }
+    button:hover { background: #1d4ed8; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .actions { display: flex; gap: 8px; }
+    .btn-edit { background: #f59e0b; padding: 6px 12px; font-size: 13px; border-radius: 4px; }
+    .btn-edit:hover { background: #d97706; }
+    .btn-del { background: #ef4444; padding: 6px 12px; font-size: 13px; border-radius: 4px; }
+    .btn-del:hover { background: #dc2626; }
+  </style>
+</head>
+<body>
+
+  <h1>Listado de Países</h1>
+
+  <div class="form-box">
+    <input type="text" id="nombrePais" placeholder="Nombre del nuevo país...">
+    <button onclick="agregarPais()">Agregar País</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 70px;">ID</th>
+        <th>País</th>
+        <th style="width: 160px;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaPaises"></tbody>
+  </table>
+
+  <script>
+    async function cargarPaises() {
+      const res = await fetch('/paises');
+      const paises = await res.json();
+      const tbody = document.getElementById('tablaPaises');
+      tbody.innerHTML = '';
+      paises.forEach(p => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${p.pais_id}</td>
+            <td>${p.pais_descripcion}</td>
+            <td class="actions">
+              <button class="btn-edit" onclick="editarPais(${p.pais_id}, '${p.pais_descripcion}')">Editar</button>
+              <button class="btn-del" onclick="eliminarPais(${p.pais_id})">Borrar</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    async function agregarPais() {
+      const input = document.getElementById('nombrePais');
+      const nombre = input.value.trim();
+      if (!nombre) return;
+      await fetch('/paises', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pais_descripcion: nombre })
+      });
+      input.value = '';
+      cargarPaises();
+    }
+
+    async function editarPais(id, nombreActual) {
+      const nuevoNombre = prompt('Modificar nombre del país:', nombreActual);
+      if (!nuevoNombre || nuevoNombre.trim() === '' || nuevoNombre === nombreActual) return;
+
+      await fetch('/paises/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pais_descripcion: nuevoNombre.trim() })
+      });
+      cargarPaises();
+    }
+
+    async function eliminarPais(id) {
+      if (!confirm('¿Eliminar este país?')) return;
+      await fetch('/paises/' + id, { method: 'DELETE' });
+      cargarPaises();
+    }
+
+    cargarPaises();
+  </script>
+</body>
+</html>
